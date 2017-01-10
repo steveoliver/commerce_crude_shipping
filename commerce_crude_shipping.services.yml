@@ -1,0 +1,6 @@
+services:
+  commerce_crude_shipping.order_process.flat_rate:
+    class: Drupal\commerce_crude_shipping\OrderProcessor\FlatRate
+    arguments: ['@config.factory', '@module_handler', '@logger.factory']
+    tags:
+      - { name: commerce_order.order_processor, priority: -600 }

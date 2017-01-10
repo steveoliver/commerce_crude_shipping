@@ -1,0 +1,12 @@
+{
+  "name": "drupal/commerce_crude_shipping",
+  "type": "drupal-module",
+  "description": "Adds crude (flat-rate) shipping charges for products in Drupal Commerce.",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://github.com/steveoliver/commerce_crude_shipping",
+  "minimum-stability": "dev",
+  "require": {
+    "drupal/commerce": "~2.0"
+  }
+}

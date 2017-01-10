@@ -1,0 +1,5 @@
+name: Commerce Crude Shipping
+type: module
+description: No, not to ship crude oil. A module for handling crude (flat-rate) shipping charges.
+version: VERSION
+core: 8.x
