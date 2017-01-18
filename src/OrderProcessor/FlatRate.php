@@ -17,10 +17,12 @@ class FlatRate implements OrderProcessorInterface {
     foreach ($order->getItems() as $item) {
       /** @var \Drupal\commerce_order\Entity\OrderItem $item */
       $entity = $item->getPurchasedEntity();
-      $charge = $entity->get('field_flat_rate_shipping_amount')->getValue();
-      if (!empty($charge[0])) {
-        $rate = new Price($charge[0]['number'], $charge[0]['currency_code']);
-        $adjustment = $adjustment->add($rate->multiply($item->getQuantity()));
+      if ($entity->field_flat_rate_shipping_amount) {
+        $charge = $entity->field_flat_rate_shipping_amount->value;
+        if (!empty($charge[0])) {
+          $rate = new Price($charge[0]['number'], $charge[0]['currency_code']);
+          $adjustment = $adjustment->add($rate->multiply($item->getQuantity()));
+        }
       }
     }
     if (!$adjustment->isZero()) {
