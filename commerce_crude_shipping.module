@@ -1,0 +1,31 @@
+<?php
+
+use Drupal\commerce_order\Entity\OrderInterface;
+
+/**
+ * @file
+ *
+ * Commerce Crude Shipping module.
+ */
+
+/**
+ * Implements hook_commerce_avatax_order_request_alter().
+ *
+ * @param array $request_body
+ * @param \Drupal\commerce_order\Entity\OrderInterface $order
+ */
+function commerce_crude_shipping_commerce_avatax_order_request_alter(array &$request_body, OrderInterface $order) {
+  // Add line item for shipping.
+  foreach ($order->getAdjustments() as $adjustment) {
+    if ($adjustment->getType() == 'shipping') {
+      $request_body['lines'][] = [
+        // Use time() for unique id since we don't have an id for this charge.
+        'number' => time(),
+        'quantity' => 1,
+        'amount' => $adjustment->getAmount()->getNumber(),
+        // Shipping & Handling combined (taxable).
+        'taxCode' => 'FR030000',
+      ];
+    }
+  }
+}
