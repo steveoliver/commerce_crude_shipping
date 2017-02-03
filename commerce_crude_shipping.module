@@ -1,6 +1,8 @@
 <?php
 
+use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_order\Entity\OrderInterface;
+use Drupal\commerce_price\Price;
 
 /**
  * @file
@@ -30,6 +32,31 @@ function commerce_crude_shipping_commerce_avatax_order_request_alter(array &$req
   }
 }
 
+/**
+ * Implements hook_commerce_avatax_order_response_alter().
+ *
+ * Adds sales tax adjustments to items with taxable shipping charges.
+ *
+ * @param array $response_body
+ *   The response body.
+ * @param \Drupal\commerce_order\Entity\OrderInterface $order
+ *   The order.
+ */
+function commerce_crude_shipping_commerce_avatax_order_response_alter(array $response_body, OrderInterface $order) {
+  $items_tax = [];
+  $order_currency_code = $order->getTotalPrice()->getCurrencyCode();
+  foreach ($response_body['lines'] as $line) {
+    $items_tax[$line['lineNumber']] = $line['tax'];
+  }
+  foreach ($order->getItems() as $item) {
+    if (isset($items_tax[$item->id() . '_shipping'])) {
+      $adjustment_amount = $items_tax[$item->id() . '_shipping'];
+      $item->addAdjustment(new Adjustment([
+        'type' => 'sales_tax',
+        'label' => 'Sales tax (shipping)',
+        'amount' => new Price((string) $adjustment_amount, $order_currency_code),
+        'source_id' => $order->id(),
+      ]));
     }
   }
 }
