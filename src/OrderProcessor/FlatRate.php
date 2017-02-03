@@ -13,7 +13,6 @@ class FlatRate implements OrderProcessorInterface {
    * {@inheritdoc}
    */
   public function process(OrderInterface $order) {
-    $adjustment = new Price('0', $order->getTotalPrice()->getCurrencyCode());
     foreach ($order->getItems() as $item) {
       /** @var \Drupal\commerce_order\Entity\OrderItem $item */
       $entity = $item->getPurchasedEntity();
@@ -21,16 +20,14 @@ class FlatRate implements OrderProcessorInterface {
         /** @var Drupal\commerce_price\Plugin\Field\FieldType\PriceItem $charge */
         $charge = $entity->field_flat_rate_shipping_amount->first();
         if (!empty($charge)) {
-          $adjustment = $adjustment->add($charge->toPrice()->multiply($item->getQuantity()));
+          $item->addAdjustment(new Adjustment([
+            'type' => 'shipping',
+            'label' => 'Shipping',
+            'amount' => $charge->toPrice(),
+            'source_id' => $order->id(),
+          ]));
         }
       }
-    }
-    if (!$adjustment->isZero()) {
-      $order->addAdjustment(new Adjustment([
-        'type' => 'shipping',
-        'label' => 'Shipping',
-        'amount' => $adjustment,
-      ]));
     }
   }
 
