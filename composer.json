@@ -7,6 +7,6 @@
   "homepage": "https://github.com/steveoliver/commerce_crude_shipping",
   "minimum-stability": "dev",
   "require": {
-    "drupal/commerce": "dev-2.x"
+    "drupal/commerce": "~2"
   }
 }
